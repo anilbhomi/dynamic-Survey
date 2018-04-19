@@ -62,7 +62,11 @@ public class LuncherActivity extends AppCompatActivity
         rvFormsList.setLayoutManager(new LinearLayoutManager(this));
         rvFormsList.setItemAnimator(new DefaultItemAnimator());
 
-        retriveFormsList();
+        if (DatabaseManager.getInstance(this).checkForms() == 1) {
+            readForms();
+        } else {
+            retriveFormsList();
+        }
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

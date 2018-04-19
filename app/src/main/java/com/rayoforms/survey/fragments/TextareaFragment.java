@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,18 +15,21 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.rayoforms.survey.Utils.Constants;
-import com.rayoforms.survey.activities.LuncherActivity;
 import com.rayoforms.survey.R;
+import com.rayoforms.survey.Utils.Constants;
 import com.rayoforms.survey.Utils.DatabaseManager;
 import com.rayoforms.survey.Utils.PrefManager;
 import com.rayoforms.survey.activities.FillFormActivity;
+import com.rayoforms.survey.activities.LuncherActivity;
 import com.rayoforms.survey.customs.OnSwipeTouchListener;
 import com.rayoforms.survey.interfaces.onTabsChangeListener;
 
-public class EdittextFragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class TextareaFragment extends Fragment {
 
-    public EditText etdEdittext;
+    public EditText etTextArea;
 
     private String fieldName;
     private String label;
@@ -36,15 +38,16 @@ public class EdittextFragment extends Fragment {
 
     public onTabsChangeListener onTabsChangeListener;
 
-    public EdittextFragment() {
+    public TextareaFragment() {
+        // Required empty public constructor
     }
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static EdittextFragment newInstance(int surveyId, JsonObject objQuestion, JsonObject ansObject, int position, int size, Boolean isFromEdit) {
-        EdittextFragment edittextFragment = new EdittextFragment();
+    public static TextareaFragment newInstance(int surveyId, JsonObject objQuestion, JsonObject ansObject, int position, int size, Boolean isFromEdit) {
+        TextareaFragment textareaFragment = new TextareaFragment();
         Bundle args = new Bundle();
         args.putString(Constants.EXTRA_LABEL, objQuestion.get("label").getAsString());
         args.putString(Constants.EXTRA_NAME, objQuestion.get("name").getAsString());
@@ -56,24 +59,24 @@ public class EdittextFragment extends Fragment {
             args.putString(Constants.EXTRA_ANS_OBJECT, ansObject.toString());
         }
         args.putBoolean(Constants.EXTRA_IS_FROM_EDIT, isFromEdit);
-        edittextFragment.setArguments(args);
-        return edittextFragment;
+        textareaFragment.setArguments(args);
+        return textareaFragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_edittext, container, false);
+        View view = inflater.inflate(R.layout.fragment_textarea, container, false);
         TextView tvLabel = view.findViewById(R.id.tv_label);
-        etdEdittext = view.findViewById(R.id.et_edittext);
+        etTextArea = view.findViewById(R.id.et_edittext);
 
         fieldName = getArguments().getString(Constants.EXTRA_NAME);
         label=getArguments().getString(Constants.EXTRA_LABEL);
         tvLabel.setText(label);
 
         if (getArguments().getBoolean(Constants.EXTRA_IS_FROM_EDIT)) {
-            etdEdittext.setText(new JsonParser().parse(getArguments().getString(Constants.EXTRA_ANS_OBJECT)).getAsJsonObject().get(fieldName).getAsString());
+            etTextArea.setText(new JsonParser().parse(getArguments().getString(Constants.EXTRA_ANS_OBJECT)).getAsJsonObject().get(fieldName).getAsString());
             surveyId = getArguments().getInt(Constants.EXTRA_SURVEY_ID);
         } else {
             surveyId = PrefManager.getInstance().getId();
@@ -85,13 +88,13 @@ public class EdittextFragment extends Fragment {
             }
 
             public void onSwipeLeft() {
-                if (TextUtils.isEmpty(etdEdittext.getText().toString()) && getArguments().getInt(Constants.EXTRA_ISREQUIRED)==1) {
+                if (TextUtils.isEmpty(etTextArea.getText().toString()) && getArguments().getInt(Constants.EXTRA_ISREQUIRED)==1) {
                     Toast.makeText(getContext(), "This field is required.", Toast.LENGTH_SHORT).show();
                 } else {
                     answerObject = (JsonObject) new JsonParser().parse(DatabaseManager.getInstance(getContext()).getData(surveyId)).getAsJsonObject();
                     remoteAnswerObject = (JsonObject) new JsonParser().parse(DatabaseManager.getInstance(getContext()).getRemoteAnsData(surveyId)).getAsJsonObject();
-                    answerObject.addProperty(fieldName, etdEdittext.getText().toString());
-                    remoteAnswerObject.addProperty(label, etdEdittext.getText().toString());
+                    answerObject.addProperty(fieldName, etTextArea.getText().toString());
+                    remoteAnswerObject.addProperty(label, etTextArea.getText().toString());
                     DatabaseManager.getInstance(getContext()).setData(surveyId, answerObject.toString(),remoteAnswerObject.toString());
                     if (((FillFormActivity) getActivity()).mViewPager.getCurrentItem() + 1 == getArguments().getInt(Constants.EXTRA_SIZE)) {
                         Intent in = new Intent(getContext(), LuncherActivity.class);

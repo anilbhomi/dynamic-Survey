@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +14,16 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.rayoforms.survey.Utils.Constants;
-import com.rayoforms.survey.activities.LuncherActivity;
 import com.rayoforms.survey.R;
+import com.rayoforms.survey.Utils.Constants;
 import com.rayoforms.survey.Utils.DatabaseManager;
 import com.rayoforms.survey.Utils.PrefManager;
 import com.rayoforms.survey.activities.FillFormActivity;
+import com.rayoforms.survey.activities.LuncherActivity;
 import com.rayoforms.survey.customs.OnSwipeTouchListener;
 import com.rayoforms.survey.interfaces.onTabsChangeListener;
 
-public class EdittextFragment extends Fragment {
+public class NumberFragment extends Fragment {
 
     public EditText etdEdittext;
 
@@ -36,15 +34,15 @@ public class EdittextFragment extends Fragment {
 
     public onTabsChangeListener onTabsChangeListener;
 
-    public EdittextFragment() {
+    public NumberFragment() {
     }
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static EdittextFragment newInstance(int surveyId, JsonObject objQuestion, JsonObject ansObject, int position, int size, Boolean isFromEdit) {
-        EdittextFragment edittextFragment = new EdittextFragment();
+    public static NumberFragment newInstance(int surveyId, JsonObject objQuestion, JsonObject ansObject, int position, int size, Boolean isFromEdit) {
+        NumberFragment numberFragment = new NumberFragment();
         Bundle args = new Bundle();
         args.putString(Constants.EXTRA_LABEL, objQuestion.get("label").getAsString());
         args.putString(Constants.EXTRA_NAME, objQuestion.get("name").getAsString());
@@ -56,8 +54,8 @@ public class EdittextFragment extends Fragment {
             args.putString(Constants.EXTRA_ANS_OBJECT, ansObject.toString());
         }
         args.putBoolean(Constants.EXTRA_IS_FROM_EDIT, isFromEdit);
-        edittextFragment.setArguments(args);
-        return edittextFragment;
+        numberFragment.setArguments(args);
+        return numberFragment;
     }
 
     @Override

@@ -62,7 +62,7 @@ public class DatabaseManager  {
         }
     }
 
-    private long checkForms(){
+    public long checkForms(){
         return realm.where(FormsModel.class).equalTo("id",1).count();
     }
 
@@ -81,14 +81,14 @@ public class DatabaseManager  {
         return data;
     }
 
-    public void setNewData(int formId,int surveyId,String questionArray, String answerObject) {
+    public void setNewData(int formId,int surveyId, String answerObject,String remoteAnsObj) {
         try {
             realm.beginTransaction();
             DataModel dataModel = new DataModel();
             dataModel.setId(surveyId);
             dataModel.setData(answerObject);
             dataModel.setForm_id(formId);
-            dataModel.setQuestion(questionArray);
+            dataModel.setRemote_data(remoteAnsObj);
             realm.insertOrUpdate(dataModel);
             realm.commitTransaction();
         } catch (Exception e) {
@@ -114,11 +114,28 @@ public class DatabaseManager  {
         return data;
     }
 
-    public void setData(int id, String data) {
+    public String getRemoteAnsData(int id) {
+        String data = "";
+        try {
+            realm.beginTransaction();
+            DataModel dataModel = realm.where(DataModel.class).equalTo("id", id).findFirst();
+            DataModel model = realm.copyFromRealm(dataModel);
+            data = model.getRemote_data();
+            realm.commitTransaction();
+        } catch (Exception e) {
+            errorHandling(e);
+        } finally {
+            closeRealm();
+        }
+        return data;
+    }
+
+    public void setData(int id, String data,String remoteAnsData) {
         try {
             realm.beginTransaction();
             DataModel dataModel = realm.where(DataModel.class).equalTo("id", id).findFirst();
             dataModel.setData(data);
+            dataModel.setRemote_data(remoteAnsData);
             realm.commitTransaction();
         } catch (Exception e) {
             errorHandling(e);

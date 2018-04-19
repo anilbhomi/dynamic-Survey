@@ -10,7 +10,9 @@ public class DataModel extends RealmObject {
     public int form_id;
     public int id;
     public String data;
-    public String question;
+    public String remote_data;
+
+
 
     @Override
     public String toString() {
@@ -18,7 +20,7 @@ public class DataModel extends RealmObject {
                 "id=" + id +
                 "form_id=" + form_id +
                 ", data='" + data + '\'' +
-                ", question='" + question + '\'' +
+                ", remote_data='" + remote_data + '\'' +
                 '}';
     }
 
@@ -31,13 +33,12 @@ public class DataModel extends RealmObject {
         this.form_id = form_id;
     }
 
-
-    public String getQuestion() {
-        return question;
+    public String getRemote_data() {
+        return remote_data;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setRemote_data(String remote_data) {
+        this.remote_data = remote_data;
     }
 
     public int getId() {

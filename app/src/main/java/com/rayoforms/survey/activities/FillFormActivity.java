@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -28,24 +29,29 @@ import com.rayoforms.survey.Utils.ToastManager;
 import com.rayoforms.survey.Utils.ViewPagerManager;
 import com.rayoforms.survey.customs.CustomViewPager;
 import com.rayoforms.survey.fragments.EdittextFragment;
+import com.rayoforms.survey.interfaces.onTabsChangeListener;
 
 import org.json.JSONArray;
 
 /**
  * An Activity to fill up new form
  */
-public class FillFormActivity extends AppCompatActivity implements EdittextFragment.onTabsChangeListener {
+public class FillFormActivity extends AppCompatActivity implements onTabsChangeListener {
 
     private JsonArray questionsArray;
 
     private Boolean isFromEdit = false;
     private int form_id;
+    private int survey_id;
     private String slug;
     private int qusPosition;
+    private JsonObject answerObject;
+    private JsonObject remoteAnswerObject;
 
     public SectionsPagerAdapter mSectionsPagerAdapter;
 
     public CustomViewPager mViewPager;
+    private int currentPosition;
 
     /**
      *get slug, form_id, isFromEdit from {@link FormsListActivity}
@@ -61,6 +67,7 @@ public class FillFormActivity extends AppCompatActivity implements EdittextFragm
         setContentView(R.layout.activity_fill_form);
         slug = getIntent().getStringExtra("slug");
         form_id = getIntent().getIntExtra("form_id", 0);
+        survey_id = getIntent().getIntExtra("survey_id", 0);
         isFromEdit = getIntent().getBooleanExtra("isFromEdit", false);
 
         PrefManager.getInstance().setId(PrefManager.getInstance().getId() == 0 ? 1 : PrefManager.getInstance().getId() + 1);
@@ -68,8 +75,9 @@ public class FillFormActivity extends AppCompatActivity implements EdittextFragm
         if (!isFromEdit) {
             if (DatabaseManager.getInstance(this).checkQuestion(form_id) > 0) {
                 getQuestionFromDatabase();
+                addAnsToAnswerObject();
                 setAdapter();
-                DatabaseManager.getInstance(FillFormActivity.this).setNewData(form_id,PrefManager.getInstance().getId(),String.valueOf(questionsArray), String.valueOf(addAnsToAnswerObject()));
+                DatabaseManager.getInstance(FillFormActivity.this).setNewData(form_id,PrefManager.getInstance().getId(), String.valueOf(answerObject),String.valueOf(remoteAnswerObject));
             } else {
                 getQuestionFromServer();
             }
@@ -91,8 +99,9 @@ public class FillFormActivity extends AppCompatActivity implements EdittextFragm
                     public void onResponse(JSONArray jsonArray) {
                         DatabaseManager.getInstance(FillFormActivity.this).setQuestion(form_id, String.valueOf(jsonArray));
                         getQuestionFromDatabase();
+                        addAnsToAnswerObject();
                         setAdapter();
-                        DatabaseManager.getInstance(FillFormActivity.this).setNewData(form_id,PrefManager.getInstance().getId(),String.valueOf(questionsArray), String.valueOf(addAnsToAnswerObject()));
+                        DatabaseManager.getInstance(FillFormActivity.this).setNewData(form_id,PrefManager.getInstance().getId(), String.valueOf(answerObject),String.valueOf(remoteAnswerObject));
                     }
                 },
                 new Response.ErrorListener() {
@@ -112,14 +121,16 @@ public class FillFormActivity extends AppCompatActivity implements EdittextFragm
     }
 
     /**
-     * @return answerObject as default answer to all questions
+     * answerObject to store data tobe sent to server
+     * remoteAnswerObject to access remotely within app for edit option
      */
-    private JsonObject addAnsToAnswerObject() {
-        JsonObject answerObject = new JsonObject();
+    private void addAnsToAnswerObject() {
+        answerObject = new JsonObject();
+        remoteAnswerObject = new JsonObject();
         for (int i = 0; i < questionsArray.size(); i++) {
             answerObject.addProperty(questionsArray.get(i).getAsJsonObject().get("name").getAsString(), "");
+            remoteAnswerObject.addProperty(questionsArray.get(i).getAsJsonObject().get("label").getAsString(), "");
         }
-        return answerObject;
     }
 
     /**
@@ -167,8 +178,8 @@ public class FillFormActivity extends AppCompatActivity implements EdittextFragm
             if (!isFromEdit) {
                 return ViewPagerManager.Pager(0, (JsonObject) questionsArray.get(position), null, position + 1, questionsArray.size(), false);
             } else {
-                JsonObject ansObject = new JsonParser().parse(DatabaseManager.getInstance(getApplicationContext()).getData(form_id)).getAsJsonObject();
-                return ViewPagerManager.Pager(form_id, (JsonObject) questionsArray.get(position), ansObject, qusPosition, questionsArray.size(), true);
+                JsonObject ansObject = new JsonParser().parse(DatabaseManager.getInstance(getApplicationContext()).getData(survey_id)).getAsJsonObject();
+                return ViewPagerManager.Pager(survey_id, (JsonObject) questionsArray.get(position), ansObject, qusPosition, questionsArray.size(), true);
             }
         }
 

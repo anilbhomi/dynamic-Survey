@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,8 @@ public class FormsListsAdapter extends RecyclerView.Adapter<FormsListsAdapter.Vi
             @Override
             public void onClick(View view) {
                 Intent in = new Intent(context, EditActivity.class);
-                in.putExtra("id", listItem.getId());
+                in.putExtra("form_id", listItem.getForm_id());
+                in.putExtra("survey_id", listItem.getId());
                 context.startActivity(in);
             }
         });

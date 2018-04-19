@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;;import com.rayoforms.survey.modals.DataModel;
 import com.rayoforms.survey.R;
 import com.rayoforms.survey.Utils.DatabaseManager;
